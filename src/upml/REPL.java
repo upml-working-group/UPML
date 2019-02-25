@@ -29,7 +29,7 @@ public class REPL {
 		if (cmd == null) {
 			return;
 		}
-		if (cmd.startsWith("quit") || cmd.startsWith("end") || cmd == null) {
+		if (cmd.startsWith("quit") || cmd.startsWith("end") || cmd.startsWith("exit") || cmd == null) {
 			System.exit(0);
 		} else if (cmd.startsWith("?")) {
 			cmd = cmd.trim().substring(1);
@@ -92,7 +92,7 @@ public class REPL {
 
 
 	public static void main(String[] args) {
-		System.out.println("A simple Read-Eval-Print-Loop for the JAGS language for BEAST");
+		System.out.println("A simple Read-Eval-Print-Loop for the JAGS language for UPML");
 		REPL repl = new REPL();
 		repl.doREPL();
 	}
