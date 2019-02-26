@@ -15,14 +15,13 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import upml.nodes.*;
 import upml.parser.*;
 import upml.parser.UPMLParser.*;
  
 
 public class UPMLListenerImpl extends UPMLBaseListener {
 	StringBuilder cmds;
-	String tabs = "";
+	String tabs = "\t";
 	
 	static private Set<String> bivarOperators;
 	static private Set<String> univarDistirbutions;
@@ -57,7 +56,6 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 	
 	// we want to return String and String[] -- so make it a visitor of Object and cast to expected type
 	public class UPMLASTVisitor extends UPMLBaseVisitor<Object> {
-		List<Distribution> distributions = new ArrayList<>();
 		
 		Map<String, Integer> iteratorValue = new HashMap<>();
 		Map<String, Integer> iteratorDimension = new HashMap<>();
@@ -147,7 +145,6 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 		
 		@Override
 		public Object visitStoch_relation(UPMLParser.Stoch_relationContext ctx) {
-			System.out.println(2);
 			String distr = (String) visit(ctx.getChild(2));
 			String id = ctx.getChild(0).getText();
 			distr = distr.replaceAll("\\$\\(id\\)", id);
@@ -163,7 +160,7 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 				id += ']';
 			}
 			
-			String distribution = tabs + id + "~" + distr + "\n";
+			String distribution = tabs + id + " ~ " + distr + "\n";
 			return distribution;
 		}
 		
@@ -187,11 +184,10 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 			return element;
 		}
 		
-		
 		@Override
 		public Object visitExpression(UPMLParser.ExpressionContext ctx) {
 			if (ctx.getChildCount() == 1) {
-				// should be constant, variable or iterator reference
+				// should be constant, variable, iterator reference, or method call
 				String expr = (String) visit(ctx.getChild(0));
 				return expr;
 			}
@@ -219,11 +215,12 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 						case 4:
 							expr = f1 + " >> " + f2; break;
 						case 5:
-							expr = f1 + " >>> " + f2; break;
+							expr = "(" + f1 +" % 0x100000000) >>" + f2; break;
+							//expr = f1 + " >>> " + f2; break;
 						} 
 						break;
-					case "&&": expr = f1 + " and " + f2; break;
-					case "||": expr = f1 + " or " + f2; break;
+					case "&&": expr = "1 if ("+f1 + " and " + f2 +") else 0"; break;
+					case "||": expr = "1 if ("+f1 + " or " + f2 +") else 0"; break;
 //					case "!=": expr = f1 + " <> " + f2; break;
 					default:
 						expr = f1 + " " + s + " " + f2; 
@@ -276,7 +273,7 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 			String inner = (String) visit(ctx.getChild(1));
 			loop.append(inner);
 			tabs = tabs.substring(0, tabs.length() - 2);						
-			return null;
+			return loop.toString();
 		}
 		
 		@Override // counter: FOR '(' NAME IN range_element ')'
@@ -300,7 +297,7 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 				}
 			}
 			range.append("]");
-			return range;
+			return range.toString();
 		}
 		
 		@Override // range_element: | expression 
@@ -313,9 +310,9 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 		
 		@Override // expression_list : expression (',' expression)*
 		public Object visitExpression_list(UPMLParser.Expression_listContext ctx) {
-			JFunction [] f = new JFunction[ctx.getChildCount()/2+1];
+			String [] f = new String[ctx.getChildCount()/2+1];
 			for (int i = 0; i < f.length; i++) {
-				f[i] = (JFunction) visit(ctx.getChild(i*2));
+				f[i] = (String) visit(ctx.getChild(i*2));
 			}
 			return f;
 		}
@@ -336,7 +333,7 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 					}
 				}
 				array.append("]");
-				return array;
+				return array.toString();
 			}
 			
 			// process expression_list
@@ -352,10 +349,11 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 					}
 				}
 				array.append(")");
-				return array;
+				return array.toString();
 			}
 			
 			switch (functionName) {
+				case "cbrt": methodCall = "(" + f[0] + "**(1./3.))";break;
 				case "length": methodCall = "len(" + f[0] + ")";break;
 
 				case "inprod": methodCall = "np.dot(" +f[0] + "," + f[1] +")"; break;
@@ -366,6 +364,7 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 				case "max": methodCall = "max(" +f[0] + "," + f[1] +")";break;
 				case "sum": methodCall = "sum(" +f[0] + "," + f[1] +")";break;
 
+				case "equals": methodCall = "(" +f[0] + "==" + f[1] +")";break;
 				default:
 					throw new IllegalArgumentException("Unknown function : " + functionName);
 			}
