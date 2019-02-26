@@ -28,34 +28,57 @@ public class FunctionTest extends TestCase {
 		assertEquals(test(m3 + " a=dim(m3)[1]"), 2.0);
 		assertEquals(test(m3 + " a=dim(m3)[2]"), 3.0);
 
-		assertEquals(test(m1 + " a=length(m1)"), 4.0);
-		assertEquals(test(m3 + " a=length(m3)"), 6.0);
 
 		assertEquals(test(m1 + " a=length(dim(m1))"), 2.0);
 		assertEquals(test(m3 + " a=length(dim(m3))"), 2.0);
 
-		assertEquals(test(m1 + " a= inverse(m1)[1]"), -2.0, 1e-12);
-		assertEquals(test(m1 + " a= inverse(m1)[3]"), 1.5, 1e-12);
-		assertEquals(test(m1 + " a= inverse(m1)[2]"), 1.0, 1e-12);
-		assertEquals(test(m1 + " a= inverse(m1)[4]"), -0.5, 1e-12);
 
-		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[1]"), 2.0);
-		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[2]"), 2.0);
-		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[3]"), 12.0);
-		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[4]"), 12.0);
+		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[1][1]"), 10.0);
+		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[1][2]"), 7.0);
+		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[2][1]"), 22.0);
+		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[2][2]"), 15.0);
+		
+		
+//		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[1]"), 10.0);
+//		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[2]"), 7.0);
+//		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[3]"), 22.0);
+//		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[4]"), 15.0);
 
-		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[1]"), 10.0);
-		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[2]"), 7.0);
-		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[3]"), 22.0);
-		assertEquals(test(m1 + " " + m2 + " a= prod(m1,m2)[4]"), 15.0);
+		assertEquals(test(m1 + " a= inverse(m1)[1][1]"), -2.0, 1e-12);
+		assertEquals(test(m1 + " a= inverse(m1)[1][2]"), 1.0, 1e-12);
+		assertEquals(test(m1 + " a= inverse(m1)[2][1]"), 1.5, 1e-12);
+		assertEquals(test(m1 + " a= inverse(m1)[2][2]"), -0.5, 1e-12);
 
-		assertEquals(test(m1 + " a=t(m1)[1]"), 1.0);
-		assertEquals(test(m1 + " a=t(m1)[2]"), 3.0);
-		assertEquals(test(m1 + " a=t(m1)[3]"), 2.0);
-		assertEquals(test(m1 + " a=t(m1)[4]"), 4.0);
+//		assertEquals(test(m1 + " a= inverse(m1)[1]"), -2.0, 1e-12);
+//		assertEquals(test(m1 + " a= inverse(m1)[3]"), 1.5, 1e-12);
+//		assertEquals(test(m1 + " a= inverse(m1)[2]"), 1.0, 1e-12);
+//		assertEquals(test(m1 + " a= inverse(m1)[4]"), -0.5, 1e-12);
 
-		assertEquals(test(m2 + " a= logdet(m2)"), log(2.0));
-		// assertEquals(test(m1 + " " + m2 +" a= m1 %*% m2"), 1.0);
+		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[1][1]"), 2.0);
+		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[1][2]"), 2.0);
+		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[2][1]"), 12.0);
+		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[2][2]"), 12.0);
+
+//		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[1]"), 2.0);
+//		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[2]"), 2.0);
+//		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[3]"), 12.0);
+//		assertEquals(test(m1 + " " + m2 + " a= inprod(m1,m2)[4]"), 12.0);
+
+		assertEquals(test(m1 + " a=t(m1)[1][1]"), 1.0);
+		assertEquals(test(m1 + " a=t(m1)[1][2]"), 3.0);
+		assertEquals(test(m1 + " a=t(m1)[2][1]"), 2.0);
+		assertEquals(test(m1 + " a=t(m1)[2][2]"), 4.0);
+
+//		assertEquals(test(m1 + " a=t(m1)[1]"), 1.0);
+//		assertEquals(test(m1 + " a=t(m1)[2]"), 3.0);
+//		assertEquals(test(m1 + " a=t(m1)[3]"), 2.0);
+//		assertEquals(test(m1 + " a=t(m1)[4]"), 4.0);
+
+		assertEquals(test(m2 + " a= logdet(m2)"), log(2.0), EPSILON);
+		//assertEquals(test(m1 + " " + m2 +" a= m1 %*% m2"), 1.0);
+
+		assertEquals(test(m1 + " a=length(m1)"), 4.0);
+		assertEquals(test(m3 + " a=length(m3)"), 6.0);
 	}
 
 	@Test
@@ -122,7 +145,7 @@ public class FunctionTest extends TestCase {
 //			// ignore invalid input
 //		}
 		assertEquals(test("a=ceil(" + v + ")"), ceil(d), EPSILON);
-		assertEquals(test("a=trunc(" + v + ")"), floor(d), EPSILON);
+		assertEquals(test("a=trunc(" + v + ")"), trunc(d), EPSILON);
 		assertEquals(test("a=floor(" + v + ")"), floor(d), EPSILON);
 		assertEquals(test("a=round(" + v + ")"), (double) round(d), EPSILON);
 		assertEquals(test("a=signum(" + v + ")"), signum(d), EPSILON);
@@ -139,11 +162,11 @@ public class FunctionTest extends TestCase {
 
 	@Test
 	public void testTrigeomatryFunctions() {
-//		testTrigeomatryFunctions("0.0", 0.0);
-//		testTrigeomatryFunctions("0.5", 0.5);
-//		testTrigeomatryFunctions("-0.5", -0.5);
-//		testTrigeomatryFunctions("0.25", 0.25);
-//		testTrigeomatryFunctions("-0.25", -0.25);
+		testTrigeomatryFunctions("0.0", 0.0);
+		testTrigeomatryFunctions("0.5", 0.5);
+		testTrigeomatryFunctions("-0.5", -0.5);
+		testTrigeomatryFunctions("0.25", 0.25);
+		testTrigeomatryFunctions("-0.25", -0.25);
 	}
 
 	final static double EPSILON = 1e-11;
@@ -174,6 +197,10 @@ public class FunctionTest extends TestCase {
 		assertEquals(test("a=arctanh(" + v + ")"), atanh(d), EPSILON);
 	}
 
+	double trunc(double val) {
+		return val > 0 ? floor(val) : ceil(val); 
+	}
+	
 	double asinh(double val) {
 		return (Math.log(val + Math.sqrt(val * val + 1)));
 	}
@@ -194,7 +221,8 @@ public class FunctionTest extends TestCase {
 				System.out.println((String) o);
 			}
 
-			String pythonCmd = "import numpy;\n" + ((String) o).trim() + "\nprint(a)\n";
+			cmd = o.toString().trim().replaceAll("\n\t", "\n");
+			String pythonCmd = "import numpy;\n" + cmd + "\nprint(a)\n";
 
 			String PYTHON_FILE = "/tmp/python.test";
 			FileWriter outfile = new FileWriter(PYTHON_FILE);

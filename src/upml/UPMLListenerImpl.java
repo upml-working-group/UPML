@@ -166,10 +166,13 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 		
 		@Override
 		protected Object aggregateResult(Object aggregate, Object nextResult) {
-			if (nextResult != null) {
+			if (aggregate == null) {
 				return nextResult;
 			}
-			return aggregate;
+			if (nextResult == null) {
+				return aggregate;
+			}
+			return aggregate.toString() + nextResult.toString();
 		}
 		
 		@Override
@@ -189,6 +192,9 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 			if (ctx.getChildCount() == 1) {
 				// should be constant, variable, iterator reference, or method call
 				String expr = (String) visit(ctx.getChild(0));
+				if (expr == null) {
+					expr = ctx.getChild(0).getText();
+				}
 				return expr;
 			}
 			String expr = null;
@@ -234,7 +240,8 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 				} else if (s.equals("[")) {
 					String var = (String) visit(ctx.getChild(0));
 					String f1 = (String) visit(ctx.getChild(2));
-					expr = var + '[' +  f1 + ']';					
+					f1 = f1.replaceAll("\\]", "-1]");
+					expr = var + f1;					
 				}
 			}
 			return expr; 
@@ -325,14 +332,14 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 			if (functionName.equals("c")) {
 				String [] f= (String []) visit(ctx.getChild(2));				
 				StringBuilder array = new StringBuilder();
-				array.append("[");
+				array.append("numpy.array([");
 				for (int i = 0; i < f.length; i++) {
 					array.append(f[i]);
 					if (i < f.length - 1) {
 						array.append(", ");
 					}
 				}
-				array.append("]");
+				array.append("])");
 				return array.toString();
 			}
 			
@@ -354,17 +361,21 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 			
 			switch (functionName) {
 				case "cbrt": methodCall = "(" + f[0] + "**(1./3.))";break;
-				case "length": methodCall = "len(" + f[0] + ")";break;
+				case "length": methodCall = "numpy.prod(numpy.shape(" + f[0] + "))";break;
+				case "dim": methodCall = f[0] + ".shape";break;
 
-				case "inprod": methodCall = "np.dot(" +f[0] + "," + f[1] +")"; break;
+
+				case "inprod": methodCall = "(" +f[0] + " * " + f[1] +")"; break;
 				case "prod":
-				case "%*%": methodCall = "np.matmul(" +f[0] + "," + f[1] +")";break;
+				case "%*%": methodCall = "numpy.dot(" +f[0] + "," + f[1] +")";break;
 
 				case "min": methodCall = "min(" +f[0] + "," + f[1] +")";break;
 				case "max": methodCall = "max(" +f[0] + "," + f[1] +")";break;
 				case "sum": methodCall = "sum(" +f[0] + "," + f[1] +")";break;
 
 				case "equals": methodCall = "(" +f[0] + "==" + f[1] +")";break;
+
+				case "logdet": methodCall = "numpy.log(numpy.linalg.det(" + f[0] +"))"; break;
 				default:
 					throw new IllegalArgumentException("Unknown function : " + functionName);
 			}
