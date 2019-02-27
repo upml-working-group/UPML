@@ -160,7 +160,7 @@ public class UPMLListenerImpl extends UPMLBaseListener {
 				id += ']';
 			}
 			
-			String distribution = tabs + id + " ~ " + distr + "\n";
+			String distribution = tabs + id + " = " + distr + "\n";
 			return distribution;
 		}
 		

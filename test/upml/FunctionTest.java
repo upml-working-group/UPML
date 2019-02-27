@@ -1,7 +1,6 @@
 package upml;
 
-import org.apache.commons.math3.exception.MaxCountExceededException;
-import org.apache.commons.math3.special.Gamma;
+
 import org.junit.Test;
 
 import static java.lang.Math.*;
